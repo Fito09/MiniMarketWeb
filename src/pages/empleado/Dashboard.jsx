@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Package, CheckSquare, Clock, TrendingUp, Warehouse, UserCheck, Users } from 'lucide-react'
+import { Package, CheckSquare, Clock, TrendingUp, Warehouse, UserCheck, Users, Truck } from 'lucide-react'
 import Layout from '../../components/Layout'
 import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -13,6 +13,7 @@ export default function EmpleadoDashboard() {
     tareasActivas: 0,
     asistenciaHoy: null,
   })
+  const [repartidores, setRepartidores] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -42,6 +43,17 @@ export default function EmpleadoDashboard() {
         .eq('id_empleado', profile.id_empleado)
         .eq('fecha', hoy)
         .maybeSingle()
+
+      // Cargar repartidores si es admin
+      if (profile?.rol === 'admin') {
+        const { data: repartidoresData } = await supabase
+          .from('empleado')
+          .select('*')
+          .eq('tipo_cargo', 'repartidor')
+          .order('nombre')
+
+        setRepartidores(repartidoresData || [])
+      }
 
       setStats({
         pedidosAsignados: ventasCount || 0,
@@ -158,7 +170,7 @@ export default function EmpleadoDashboard() {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             Accesos Rápidos
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className={`grid gap-4 ${profile?.rol === 'admin' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-3'}`}>
             <a
               href="/empleado/pedidos"
               className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 dark:hover:border-primary-500 transition-colors"
@@ -171,18 +183,20 @@ export default function EmpleadoDashboard() {
                 Gestiona tus entregas
               </p>
             </a>
-            <a
-              href="/empleado/tareas"
-              className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 dark:hover:border-primary-500 transition-colors"
-            >
-              <CheckSquare className="w-8 h-8 text-primary-600 mb-2" />
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                Mis Tareas
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Revisa tus pendientes
-              </p>
-            </a>
+            {profile?.rol !== 'admin' && (
+              <a
+                href="/empleado/tareas"
+                className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 dark:hover:border-primary-500 transition-colors"
+              >
+                <CheckSquare className="w-8 h-8 text-primary-600 mb-2" />
+                <h3 className="font-semibold text-gray-900 dark:text-white">
+                  Mis Tareas
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Revisa tus pendientes
+                </p>
+              </a>
+            )}
             <a
               href="/empleado/asistencia"
               className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 dark:hover:border-primary-500 transition-colors"
@@ -197,6 +211,48 @@ export default function EmpleadoDashboard() {
             </a>
           </div>
         </div>
+
+        {/* Tabla de Repartidores */}
+        {profile?.rol === 'admin' && repartidores.length > 0 && (
+          <div className="card">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Truck size={24} />
+              Repartidores
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                      Nombre
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                      Teléfono
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                      Dirección
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {repartidores.map((repartidor) => (
+                    <tr key={repartidor.id_empleado} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium">
+                        {repartidor.nombre}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                        {repartidor.telefono || '-'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                        {repartidor.direccion || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Accesos rápidos de administrador */}
         {profile?.rol === 'admin' && (

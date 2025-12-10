@@ -21,22 +21,27 @@ export default function Layout({ children, type = 'cliente' }) {
   const baseEmpleadoLinks = [
     { to: '/empleado', icon: Home, label: 'Inicio' },
     { to: '/empleado/pedidos', icon: Package, label: 'Pedidos' },
-    { to: '/empleado/tareas', icon: CheckSquare, label: 'Tareas' },
     { to: '/empleado/asistencia', icon: Clock, label: 'Asistencia' },
+  ]
+
+  // Links solo para empleados normales (no admin)
+  const empleadoNormalLinks = [
+    { to: '/empleado/tareas', icon: CheckSquare, label: 'Tareas' },
   ]
 
   // Links adicionales solo para administradores
   const adminLinks = [
     { to: '/empleado/productos', icon: Package, label: 'Productos' },
-    { to: '/empleado/inventario', icon: Warehouse, label: 'Inventario' },
-    { to: '/empleado/asignar-tareas', icon: UserCheck, label: 'Asignar Tareas' },
+    { to: '/empleado/asignar-tareas', icon: UserCheck, label: 'Asignación de Repartos' },
+    { to: '/empleado/usuarios', icon: Users, label: 'Gestión de Usuarios' },
+    { to: '/empleado/historial-repartos', icon: Clock, label: 'Historial de Repartos' },
     { to: '/empleado/asistencia-empleados', icon: Users, label: 'Asistencia Empleados' },
   ]
 
   // Combinar links según el rol
   const empleadoLinks = profile?.rol === 'admin' 
     ? [...baseEmpleadoLinks, ...adminLinks]
-    : baseEmpleadoLinks
+    : [...baseEmpleadoLinks, ...empleadoNormalLinks]
 
   const clienteLinks = [
     { to: '/cliente', icon: Home, label: 'Inicio' },

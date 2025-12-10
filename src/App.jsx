@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/useAuthStore'
 import { useThemeStore } from './store/useThemeStore'
+import { useInitializeData } from './hooks/useInitializeData'
 
 // Pages
 import LoginPage from './pages/LoginPage'
@@ -11,10 +12,11 @@ import EmpleadoDashboard from './pages/empleado/Dashboard'
 import EmpleadoPedidos from './pages/empleado/Pedidos'
 import EmpleadoTareas from './pages/empleado/Tareas'
 import EmpleadoAsistencia from './pages/empleado/Asistencia'
-import EmpleadoInventario from './pages/empleado/Inventario'
 import EmpleadoAsignarTareas from './pages/empleado/AsignarTareas'
 import EmpleadoAsistenciaEmpleados from './pages/empleado/AsistenciaEmpleados'
 import EmpleadoProductos from './pages/empleado/Productos'
+import EmpleadoUsuarios from './pages/empleado/Usuarios'
+import EmpleadoHistorialRepartos from './pages/empleado/HistorialRepartos'
 import ClienteDashboard from './pages/cliente/Dashboard'
 import ClienteCatalogo from './pages/cliente/Catalogo'
 import ClienteCarrito from './pages/cliente/Carrito'
@@ -32,11 +34,18 @@ function App() {
   const user = useAuthStore((state) => state.user)
   const profile = useAuthStore((state) => state.profile)
   const { initializeTheme } = useThemeStore()
+  const { initializeAppData } = useInitializeData()
 
   useEffect(() => {
     initialize()
     initializeTheme()
   }, [])
+
+  useEffect(() => {
+    if (profile) {
+      initializeAppData()
+    }
+  }, [profile, initializeAppData])
 
   if (loading) {
     return <LoadingScreen />
@@ -95,11 +104,6 @@ function App() {
             <EmpleadoAsistencia />
           </ProtectedRoute>
         } />
-        <Route path="/empleado/inventario" element={
-          <ProtectedRoute requireEmpleado>
-            <EmpleadoInventario />
-          </ProtectedRoute>
-        } />
         <Route path="/empleado/asignar-tareas" element={
           <ProtectedRoute requireEmpleado>
             <EmpleadoAsignarTareas />
@@ -113,6 +117,16 @@ function App() {
         <Route path="/empleado/productos" element={
           <ProtectedRoute requireEmpleado>
             <EmpleadoProductos />
+          </ProtectedRoute>
+        } />
+        <Route path="/empleado/usuarios" element={
+          <ProtectedRoute requireEmpleado>
+            <EmpleadoUsuarios />
+          </ProtectedRoute>
+        } />
+        <Route path="/empleado/historial-repartos" element={
+          <ProtectedRoute requireEmpleado>
+            <EmpleadoHistorialRepartos />
           </ProtectedRoute>
         } />
         
