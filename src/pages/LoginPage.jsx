@@ -23,9 +23,12 @@ export default function LoginPage() {
     if (result.success) {
       console.log('Login exitoso, perfil:', result.profile)
       // Redirigir después del login exitoso
-      const redirectPath = result.profile.rol === 'empleado' || result.profile.rol === 'admin'
-        ? '/empleado'
-        : '/cliente'
+      let redirectPath = '/cliente'
+      if (result.profile.rol === 'empleado' || result.profile.rol === 'admin') {
+        redirectPath = '/empleado'
+      } else if (result.profile.rol === 'repartidor') {
+        redirectPath = '/repartidor'
+      }
       console.log('Redirigiendo a:', redirectPath)
       navigate(redirectPath, { replace: true })
     } else {

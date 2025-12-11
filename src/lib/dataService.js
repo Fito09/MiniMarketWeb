@@ -268,7 +268,7 @@ export const loadAsistencias = async (filtros = {}) => {
       .from('asistencia')
       .select(`
         *,
-        empleado:id_empleado(id_empleado, nombre, cargo, telefono)
+        empleado:id_empleado(id_empleado, nombre, rol, telefono)
       `)
     
     if (filtros.id_empleado) {
@@ -424,7 +424,7 @@ export const loadHorarios = async (filtros = {}) => {
       .from('horario_empleado')
       .select(`
         *,
-        empleado:id_empleado(nombre, cargo)
+        empleado:id_empleado(nombre, rol)
       `)
     
     if (filtros.id_empleado) {
@@ -448,7 +448,7 @@ export const loadUsuarios = async () => {
       .from('usuario')
       .select(`
         *,
-        empleado:empleado(id_empleado, nombre, cargo, telefono),
+        empleado:empleado(id_empleado, nombre, rol, telefono),
         cliente:cliente(id_cliente, nombre, telefono)
       `)
       .order('usuario')

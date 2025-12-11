@@ -3,6 +3,7 @@ import { Search, ShoppingCart, Tag, Filter, Package } from 'lucide-react'
 import Layout from '../../components/Layout'
 import { supabase } from '../../lib/supabase'
 import { useCartStore } from '../../store/useCartStore'
+import { formatCurrency } from '../../lib/currencyFormatter'
 import toast from 'react-hot-toast'
 
 export default function ClienteCatalogo() {
@@ -253,15 +254,15 @@ export default function ClienteCatalogo() {
                     {producto.en_promocion ? (
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-xl font-bold text-green-600">
-                          Bs {producto.precio_con_descuento}
+                          {formatCurrency(producto.precio_con_descuento)}
                         </span>
                         <span className="text-sm text-gray-500 line-through">
-                          Bs {producto.precio}
+                          {formatCurrency(producto.precio)}
                         </span>
                       </div>
                     ) : (
                       <div className="text-xl font-bold text-primary-600 mb-3">
-                        Bs {producto.precio}
+                        {formatCurrency(producto.precio)}
                       </div>
                     )}
 

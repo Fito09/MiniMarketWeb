@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Package, Plus, Edit, Trash2, Search, DollarSign, Calendar, Image as ImageIcon, AlertCircle } from 'lucide-react'
 import Layout from '../../components/Layout'
 import { supabase } from '../../lib/supabase'
+import { formatCurrency } from '../../lib/currencyFormatter'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
@@ -376,7 +377,7 @@ export default function Productos() {
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-600 dark:text-gray-400">Precio:</span>
                           <span className="text-lg font-bold text-primary-600 dark:text-primary-400">
-                            Bs {parseFloat(producto.precio).toFixed(2)}
+                            {formatCurrency(producto.precio)}
                           </span>
                         </div>
 

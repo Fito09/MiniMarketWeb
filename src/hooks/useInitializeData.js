@@ -39,6 +39,11 @@ export const useInitializeData = () => {
             dataService.loadProveedores(),
           ])
         }
+      } else if (profile.rol === 'repartidor') {
+        // Precargar datos del repartidor
+        await Promise.all([
+          dataService.loadRepartos({ id_empleado: profile.id_empleado }),
+        ])
       }
     } catch (error) {
       console.error('Error initializing app data:', error)

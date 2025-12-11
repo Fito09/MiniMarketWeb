@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Package, CheckSquare, Clock, TrendingUp, Warehouse, UserCheck, Users, Truck } from 'lucide-react'
+import { Package, CheckSquare, Clock, TrendingUp, Warehouse, UserCheck, Users, Truck, ShoppingCart } from 'lucide-react'
 import Layout from '../../components/Layout'
 import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../../store/useAuthStore'
@@ -274,15 +274,15 @@ export default function EmpleadoDashboard() {
                 </p>
               </a>
               <a
-                href="/empleado/inventario"
+                href="/empleado/asistencia-empleados"
                 className="p-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 dark:hover:border-primary-500 transition-colors shadow-sm"
               >
-                <Warehouse className="w-8 h-8 text-primary-600 mb-2" />
+                <Clock className="w-8 h-8 text-primary-600 mb-2" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">
-                  Inventario
+                  Asistencia
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Gestiona el stock
+                  Monitorea asistencias
                 </p>
               </a>
               <a
@@ -298,15 +298,15 @@ export default function EmpleadoDashboard() {
                 </p>
               </a>
               <a
-                href="/empleado/asistencia-empleados"
+                href="/empleado/pedidos"
                 className="p-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-500 dark:hover:border-primary-500 transition-colors shadow-sm"
               >
-                <Users className="w-8 h-8 text-primary-600 mb-2" />
+                <Package className="w-8 h-8 text-primary-600 mb-2" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">
-                  Asistencia Empleados
+                  Pedidos
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Monitorea asistencias
+                  Gestiona pedidos
                 </p>
               </a>
             </div>

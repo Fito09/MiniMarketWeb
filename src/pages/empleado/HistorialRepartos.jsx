@@ -44,7 +44,7 @@ export default function HistorialRepartos() {
             id_empleado,
             nombre,
             telefono,
-            cargo
+            rol
           ),
           venta:id_venta (
             id_venta,

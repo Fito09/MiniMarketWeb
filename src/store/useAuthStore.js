@@ -198,6 +198,12 @@ export const useAuthStore = create(
       isAdmin: () => {
         const profile = get().profile
         return profile?.rol === 'admin'
+      },
+      
+      // Verificar si es repartidor
+      isRepartidor: () => {
+        const profile = get().profile
+        return profile?.rol === 'repartidor'
       }
     }),
     {

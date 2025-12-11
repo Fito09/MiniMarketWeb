@@ -4,8 +4,11 @@ import Layout from '../../components/Layout'
 import { useCartStore } from '../../store/useCartStore'
 import { useAuthStore } from '../../store/useAuthStore'
 import { supabase } from '../../lib/supabase'
+import { formatCurrency } from '../../lib/currencyFormatter'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import PaymentMethodModal from './components/PaymentMethodModal'
+import LocationModal from './components/LocationModal'
 
 export default function ClienteCarrito() {
   const navigate = useNavigate()
@@ -14,13 +17,17 @@ export default function ClienteCarrito() {
   const [loading, setLoading] = useState(false)
   const [tipoEntrega, setTipoEntrega] = useState('domicilio')
   const [direccionEntrega, setDireccionEntrega] = useState(profile?.direccion || '')
+  const [showLocationModal, setShowLocationModal] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [selectedPayment, setSelectedPayment] = useState(null)
+  const [selectedLocation, setSelectedLocation] = useState(null)
 
   const handleUpdateQuantity = (productoId, newQuantity) => {
     if (newQuantity < 1) return
     updateQuantity(productoId, newQuantity)
   }
 
-  const handleFinalizarCompra = async () => {
+  const handleFinalizarCompra = () => {
     if (items.length === 0) {
       toast.error('El carrito está vacío')
       return
@@ -31,6 +38,13 @@ export default function ClienteCarrito() {
       return
     }
 
+    // Mostrar modal de pago
+    setShowPaymentModal(true)
+  }
+
+  const handlePaymentConfirm = async (paymentData) => {
+    setSelectedPayment(paymentData)
+    setShowPaymentModal(false)
     setLoading(true)
 
     try {
@@ -58,6 +72,10 @@ export default function ClienteCarrito() {
             id_cliente: profile.id_cliente,
             id_empleado: empleados[0].id_empleado,
             total: getTotal() + (tipoEntrega === 'domicilio' ? 2 : 0),
+            tipo_entrega: tipoEntrega,
+            direccion_envio: tipoEntrega === 'domicilio' ? direccionEntrega : null,
+            latitud: selectedLocation?.location?.lat || null,
+            longitud: selectedLocation?.location?.lng || null,
           }
         ])
         .select()
@@ -179,10 +197,10 @@ export default function ClienteCarrito() {
                       {item.precio_con_descuento ? (
                         <>
                           <span className="text-lg font-bold text-green-600">
-                            Bs {item.precio_con_descuento}
+                            {formatCurrency(item.precio_con_descuento)}
                           </span>
                           <span className="text-sm text-gray-500 line-through">
-                            Bs {item.precio}
+                            {formatCurrency(item.precio)}
                           </span>
                           <span className="badge badge-danger text-xs">
                             -{item.descuento_porcentaje}%
@@ -190,7 +208,7 @@ export default function ClienteCarrito() {
                         </>
                       ) : (
                         <span className="text-lg font-bold text-primary-600">
-                          Bs {item.precio}
+                          {formatCurrency(item.precio)}
                         </span>
                       )}
                     </div>
@@ -231,7 +249,7 @@ export default function ClienteCarrito() {
                       Subtotal
                     </p>
                     <p className="text-xl font-bold text-gray-900 dark:text-white">
-                      Bs {((item.precio_con_descuento || item.precio) * item.cantidad).toFixed(2)}
+                      {formatCurrency((item.precio_con_descuento || item.precio) * item.cantidad)}
                     </p>
                   </div>
                 </div>
@@ -285,13 +303,22 @@ export default function ClienteCarrito() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Dirección de entrega
                   </label>
-                  <textarea
-                    value={direccionEntrega}
-                    onChange={(e) => setDireccionEntrega(e.target.value)}
-                    className="input"
-                    rows="3"
-                    placeholder="Ingresa tu dirección completa"
-                  />
+                  <div className="space-y-2">
+                    <textarea
+                      value={direccionEntrega}
+                      onChange={(e) => setDireccionEntrega(e.target.value)}
+                      className="input"
+                      rows="3"
+                      placeholder="Ingresa tu dirección completa"
+                    />
+                    <button
+                      onClick={() => setShowLocationModal(true)}
+                      className="btn btn-secondary w-full text-sm flex items-center justify-center gap-2"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      Seleccionar en mapa
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -299,18 +326,18 @@ export default function ClienteCarrito() {
               <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-                  <span className="font-semibold">Bs {getTotal().toFixed(2)}</span>
+                  <span className="font-semibold">{formatCurrency(getTotal())}</span>
                 </div>
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600 dark:text-gray-400">Envío</span>
                   <span className="font-semibold">
-                    {tipoEntrega === 'domicilio' ? 'Bs 2.00' : 'Gratis'}
+                    {tipoEntrega === 'domicilio' ? formatCurrency(2) : 'Gratis'}
                   </span>
                 </div>
                 <div className="flex justify-between text-lg font-bold mt-4">
                   <span>Total</span>
                   <span className="text-primary-600">
-                    Bs {(getTotal() + (tipoEntrega === 'domicilio' ? 2 : 0)).toFixed(2)}
+                    {formatCurrency(getTotal() + (tipoEntrega === 'domicilio' ? 2 : 0))}
                   </span>
                 </div>
               </div>
@@ -340,6 +367,28 @@ export default function ClienteCarrito() {
             </div>
           </div>
         </div>
+
+        {/* Modal de ubicación */}
+        {showLocationModal && (
+          <LocationModal
+            onClose={() => setShowLocationModal(false)}
+            onConfirm={(locationData) => {
+              setDireccionEntrega(locationData.address)
+              setSelectedLocation(locationData)
+              setShowLocationModal(false)
+            }}
+            defaultAddress={direccionEntrega}
+          />
+        )}
+
+        {/* Modal de métodos de pago */}
+        {showPaymentModal && (
+          <PaymentMethodModal
+            total={getTotal() + (tipoEntrega === 'domicilio' ? 2 : 0)}
+            onClose={() => setShowPaymentModal(false)}
+            onConfirm={handlePaymentConfirm}
+          />
+        )}
       </div>
     </Layout>
   )

@@ -36,7 +36,7 @@ export default function Usuarios() {
           nombre,
           rol,
           telefono,
-          empleado:empleado(id_empleado, nombre, cargo, telefono),
+          empleado:empleado(id_empleado, nombre, rol, telefono),
           cliente:cliente(id_cliente, nombre, telefono)
         `)
         .order('usuario')
@@ -148,7 +148,7 @@ export default function Usuarios() {
             .update({
               nombre: formData.nombre,
               telefono: formData.telefono,
-              tipo_cargo: formData.rol === 'repartidor' ? 'repartidor' : 'vendedor',
+              rol: formData.rol,
             })
             .eq('id_usuario', editingId)
 
@@ -160,7 +160,7 @@ export default function Usuarios() {
                 id_usuario: editingId,
                 nombre: formData.nombre,
                 telefono: formData.telefono,
-                tipo_cargo: formData.rol === 'repartidor' ? 'repartidor' : 'vendedor',
+                rol: formData.rol,
               })
           }
 
@@ -222,7 +222,7 @@ export default function Usuarios() {
               id_usuario: newUser.id_usuario,
               nombre: formData.nombre,
               telefono: formData.telefono,
-              tipo_cargo: formData.rol === 'repartidor' ? 'repartidor' : 'vendedor',
+              rol: formData.rol,
             })
         }
 
@@ -243,7 +243,10 @@ export default function Usuarios() {
       }
 
       handleCloseModal()
-      loadUsuarios()
+      // Pequeño delay para asegurar que Supabase haya actualizado los datos
+      setTimeout(() => {
+        loadUsuarios()
+      }, 300)
     } catch (error) {
       console.error('Error saving usuario:', error)
       toast.error(error.message || 'Error al guardar usuario')
@@ -332,7 +335,7 @@ export default function Usuarios() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
             <p className="text-gray-600 dark:text-gray-400 text-sm">Total de Usuarios</p>
             <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
@@ -343,12 +346,6 @@ export default function Usuarios() {
             <p className="text-gray-600 dark:text-gray-400 text-sm">Administradores</p>
             <p className="text-3xl font-bold text-red-600 mt-1">
               {usuarios.filter(u => u.rol === 'admin').length}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Empleados</p>
-            <p className="text-3xl font-bold text-blue-600 mt-1">
-              {usuarios.filter(u => u.rol === 'empleado').length}
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
@@ -384,10 +381,7 @@ export default function Usuarios() {
                       Rol
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                      Teléfono Usuario
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                      Teléfono Empleado/Cliente
+                      Teléfono
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
                       Acciones
@@ -407,9 +401,6 @@ export default function Usuarios() {
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRolColor(usuario.rol)}`}>
                           {usuario.rol}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                        {usuario.telefono || '-'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                         {usuario.empleado?.telefono || usuario.cliente?.telefono || '-'}
@@ -487,20 +478,6 @@ export default function Usuarios() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Teléfono de Usuario
-                </label>
-                <input
-                  type="tel"
-                  name="telefono_usuario"
-                  value={formData.telefono_usuario}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Teléfono del usuario"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Nombre Completo *
                 </label>
                 <input
@@ -534,7 +511,9 @@ export default function Usuarios() {
                 <select
                   name="rol"
                   value={formData.rol}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    setFormData({ ...formData, rol: e.target.value, cargo: e.target.value })
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                   required
                 >

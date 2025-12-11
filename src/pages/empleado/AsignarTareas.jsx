@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { UserCheck, Plus, Edit, Trash2, Search, Calendar, Truck } from 'lucide-react'
 import Layout from '../../components/Layout'
 import { supabase } from '../../lib/supabase'
+import { formatCurrency } from '../../lib/currencyFormatter'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
@@ -35,7 +36,7 @@ export default function AsignarTareas() {
           empleado:id_empleado (
             id_empleado,
             nombre,
-            cargo,
+            rol,
             telefono
           ),
           venta:id_venta (
@@ -340,7 +341,7 @@ export default function AsignarTareas() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                          ${parseFloat(item.venta?.total || 0).toFixed(2)}
+                          {formatCurrency(item.venta?.total || 0)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -417,7 +418,7 @@ export default function AsignarTareas() {
                   <option value="">Seleccionar venta</option>
                   {ventas.map((venta) => (
                     <option key={venta.id_venta} value={venta.id_venta}>
-                      Venta #{venta.id_venta} - {venta.cliente?.nombre} - ${parseFloat(venta.total || 0).toFixed(2)}
+                      Venta #{venta.id_venta} - {venta.cliente?.nombre} - {formatCurrency(venta.total || 0)}
                     </option>
                   ))}
                 </select>

@@ -40,7 +40,7 @@ export default function AsistenciaEmpleados() {
           empleado:id_empleado (
             id_empleado,
             nombre,
-            cargo,
+            rol,
             telefono
           )
         `)

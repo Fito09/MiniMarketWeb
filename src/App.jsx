@@ -22,6 +22,7 @@ import ClienteCatalogo from './pages/cliente/Catalogo'
 import ClienteCarrito from './pages/cliente/Carrito'
 import ClientePedidos from './pages/cliente/Pedidos'
 import ClientePerfil from './pages/cliente/Perfil'
+import RepartidorDashboard from './pages/repartidor/Repartidor'
 import NotFound from './pages/NotFound'
 
 // Components
@@ -157,11 +158,20 @@ function App() {
           </ProtectedRoute>
         } />
         
+        {/* Rutas de repartidores */}
+        <Route path="/repartidor" element={
+          <ProtectedRoute requireRepartidor>
+            <RepartidorDashboard />
+          </ProtectedRoute>
+        } />
+        
         {/* Ruta raíz - redirige según el rol */}
         <Route path="/" element={
           user && profile 
             ? (profile.rol === 'empleado' || profile.rol === 'admin' 
                 ? <Navigate to="/empleado" replace /> 
+                : profile.rol === 'repartidor'
+                ? <Navigate to="/repartidor" replace />
                 : <Navigate to="/cliente" replace />)
             : <Navigate to="/login" replace />
         } />

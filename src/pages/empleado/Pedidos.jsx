@@ -174,7 +174,7 @@ export default function EmpleadoPedidos() {
                     <div className="flex flex-col gap-2 lg:w-48">
                       {pedido.estado === 'pendiente' && (
                         <button
-                          onClick={() => updateEstado(pedido.id, 'preparacion')}
+                          onClick={() => updateEstado(pedido.id_venta, 'preparacion')}
                           className="btn btn-primary text-sm"
                         >
                           Iniciar Preparación
@@ -182,7 +182,7 @@ export default function EmpleadoPedidos() {
                       )}
                       {pedido.estado === 'preparacion' && (
                         <button
-                          onClick={() => updateEstado(pedido.id, 'reparto')}
+                          onClick={() => updateEstado(pedido.id_venta, 'reparto')}
                           className="btn btn-primary text-sm"
                         >
                           Iniciar Reparto
@@ -198,7 +198,7 @@ export default function EmpleadoPedidos() {
                             Marcar Entregado
                           </button>
                           <button
-                            onClick={() => updateEstado(pedido.id, 'cancelado')}
+                            onClick={() => updateEstado(pedido.id_venta, 'cancelado')}
                             className="btn btn-danger text-sm flex items-center justify-center"
                           >
                             <XCircle className="w-4 h-4 mr-2" />
@@ -249,7 +249,7 @@ export default function EmpleadoPedidos() {
                   Cancelar
                 </button>
                 <button
-                  onClick={() => updateEstado(selectedPedido.id, 'entregado')}
+                  onClick={() => updateEstado(selectedPedido.id_venta, 'entregado')}
                   className="btn btn-primary flex-1"
                 >
                   Confirmar
